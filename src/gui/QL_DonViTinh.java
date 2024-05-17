@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -164,8 +165,8 @@ public class QL_DonViTinh extends JPanel implements ActionListener, MouseListene
 	}
 
 	public String taoMa() {
-		int max = daoDVT.layDSDonViTinh().size() + 1;
-		return String.format("DV%05d", max);
+		String uuid = UUID.randomUUID().toString();
+	    return "DVT" + uuid.replace("-", "").substring(0, 7).toUpperCase();
 	}
 	
 	public boolean validData() {

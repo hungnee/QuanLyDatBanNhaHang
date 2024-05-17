@@ -8,8 +8,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -61,6 +63,7 @@ public class QL_GiaSanPham extends JPanel implements ActionListener, MouseListen
 	private String p;
 	private JLabel lblAnhSP;
 	private ImageIcon myImage;
+	private double donGia;
 
 	public QL_GiaSanPham() {
 		setLayout(null);
@@ -219,7 +222,11 @@ public class QL_GiaSanPham extends JPanel implements ActionListener, MouseListen
 		
 		dsGSP = daoGSP.layDSGiaSP();
 		for(GiaSanPham gsp : dsGSP) {
-			modelGSP.addRow(new Object[] {gsp.getMaGiaSanPham()});
+			String tensp = getTenSP(gsp.getSanPham().getMaSanPham());
+			String tendv = getTenDV(gsp.getDonVi().getMaDonVi());
+			DecimalFormat df = new DecimalFormat("#,###");
+			
+			modelGSP.addRow(new Object[] {gsp.getMaGiaSanPham(), tensp, tendv, df.format(gsp.getDonGia())});
 		}
 		
 		btnChonAnh.addActionListener(this);
@@ -251,19 +258,61 @@ public class QL_GiaSanPham extends JPanel implements ActionListener, MouseListen
 	}
 	
 	public String taoMa() {
-		int ma = daoGSP.layDSGiaSP().size() + 1;
-		return String.format("GSP%05d", ma);
+		String uuid = UUID.randomUUID().toString();
+	    return "GSP" + uuid.replace("-", "").substring(0, 7).toUpperCase();
 	}
 	
 	public boolean validData() {
-		
-		String ma = txtMaGia.getText().trim();
-		
-		if(ma.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Vui lòng nhấn nút tạo mã");
-			return false;
-		}
-		return true;
+	    String ma = txtMaGia.getText().trim();
+	    String tenSP = cmbTenSP.getSelectedItem().toString().trim();
+	    String tenDV = cmbDV.getSelectedItem().toString().trim();
+	    String donGiaStr = txtGia.getText().trim();
+	    double donGia = 0;
+
+	    // Kiểm tra các trường rỗng
+	    if(ma.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng nhấn nút tạo mã");
+	        return false;
+	    } 
+	    if(tenSP.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm");
+	        return false;
+	    } 
+	    if (tenDV.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng chọn đơn vị");
+	        return false;
+	    } 
+	    if(donGiaStr.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng điền đơn giá");
+	        txtGia.requestFocus();
+	        return false;
+	    }
+	    // Kiểm tra định dạng số của đơn giá
+	    if(!donGiaStr.matches("\\d+(\\.\\d+)?")) {
+	        JOptionPane.showMessageDialog(this, "Giá chỉ được chứa ký tự số và dấu chấm thập phân");
+	        txtGia.requestFocus();
+	        return false;
+	    }
+	    try {
+	        donGia = Double.parseDouble(donGiaStr);
+	    } catch (NumberFormatException e) {
+	        JOptionPane.showMessageDialog(this, "Đơn giá không hợp lệ");
+	        txtGia.requestFocus();
+	        return false;
+	    }
+	    // Kiểm tra giá trị của đơn giá
+	    if(!(donGia > 0)) {
+	        JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0");
+	        txtGia.requestFocus();
+	        return false;
+	    }
+	    String anhSanPham = (String) lblAnhSP.getClientProperty("imageName");
+	    if(anhSanPham == null) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng chọn ảnh sản phẩm");
+	        return false;
+	    }
+
+	    return true;
 	}
 	
 	public String getMaSP(String ten) {
@@ -301,6 +350,23 @@ public class QL_GiaSanPham extends JPanel implements ActionListener, MouseListen
 				lblAnhSP.setIcon(imgicon);
 				lblAnhSP.putClientProperty("imageName", gsp.getAnhSanPham());
 			}
+		}
+	}
+	
+	public void lamMoiThongTin() {
+		txtMaGia.setText("");
+		cmbTenSP.setSelectedIndex(0);
+		cmbDV.setSelectedIndex(0);
+		txtGia.setText("");
+		lblAnhSP.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/image/noproduct.jpeg")).getImage().getScaledInstance(lblAnhSP.getWidth(), lblAnhSP.getHeight(), Image.SCALE_DEFAULT)));
+		modelGSP.setRowCount(0);
+		dsGSP = daoGSP.layDSGiaSP();
+		for(GiaSanPham gsp : dsGSP) {
+			String tensp = getTenSP(gsp.getSanPham().getMaSanPham());
+			String tendv = getTenDV(gsp.getDonVi().getMaDonVi());
+			DecimalFormat df = new DecimalFormat("#,###");
+			
+			modelGSP.addRow(new Object[] {gsp.getMaGiaSanPham(), tensp, tendv, df.format(gsp.getDonGia())});
 		}
 	}
 	
@@ -344,7 +410,7 @@ public class QL_GiaSanPham extends JPanel implements ActionListener, MouseListen
 		Object obj = e.getSource();
 		if(obj.equals(btnChonAnh)) {
 			file = new JFileChooser();
-			file.setCurrentDirectory(new File("user.dir"));
+			file.setCurrentDirectory(new File(System.getProperty("user.dir"), "src/image"));
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("All Pic", "png", "jpg", "jpeg", "gif");
 			file.addChoosableFileFilter(filter);
 			int a = file.showSaveDialog(null);
@@ -383,13 +449,68 @@ public class QL_GiaSanPham extends JPanel implements ActionListener, MouseListen
 				} else {
 					GiaSanPham gsp = new GiaSanPham(maGia, sp, dv, donGia, anhSanPham);
 					if(daoGSP.themGSP(gsp)) {
-//						lamMoiThongTin();
+						lamMoiThongTin();
 						JOptionPane.showMessageDialog(this, "Thêm thành công");
 					} else {
-						JOptionPane.showMessageDialog(this, "Thêm thất bại - Mã phòng đã tồn tại");
+						JOptionPane.showMessageDialog(this, "Thêm thất bại - Mã giá đã tồn tại");
 					}
 				}
 			}
+		}
+		
+		if(obj.equals(btnSua)) {
+			int row = tblGSP.getSelectedRow();
+			if(row == -1) {
+				JOptionPane.showMessageDialog(this, "Vui lòng chọn giá sản phẩm cần sửa");
+			} else {
+				if(validData()) {
+					String maGia = txtMaGia.getText().trim();
+					String tenSP = cmbTenSP.getSelectedItem().toString();
+					String tenDV = cmbDV.getSelectedItem().toString();
+					double donGia = Double.parseDouble(txtGia.getText().trim());
+					String anhSanPham = (String) lblAnhSP.getClientProperty("imageName");
+					
+					SanPham sp = new SanPham();
+					sp.setMaSanPham(getMaSP(tenSP));
+					
+					DonViTinh dv = new DonViTinh();
+					dv.setMaDonVi(getMaDV(tenDV));
+					
+					GiaSanPham gsp = new GiaSanPham(maGia, sp, dv, donGia, anhSanPham);
+					if(daoGSP.suaGiaSanPham(gsp)) {
+						lamMoiThongTin();
+						JOptionPane.showMessageDialog(this, "Sửa thành công");
+					} else {
+						JOptionPane.showMessageDialog(this, "Sửa thất bại");
+					}
+				}
+			}
+		}
+		
+		if(obj.equals(btnXoa)) {
+			int row = tblGSP.getSelectedRow();
+			if(row == -1) {
+				JOptionPane.showMessageDialog(this, "Vui lòng chọn giá cần xóa");
+			} else {
+				 String maGSP = (String) modelGSP.getValueAt(row, 0);
+				
+				 
+				 GiaSanPham gsp = new GiaSanPham(maGSP);
+				
+				int choice = JOptionPane.showOptionDialog(null, "Bạn có muốn xóa giá sản phẩm này?", "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+				if(choice== JOptionPane.YES_OPTION) {
+					if(daoGSP.xoaGiaSanPham(gsp)) {
+						lamMoiThongTin();
+		                JOptionPane.showMessageDialog(this, "Đã xóa");
+					} else {
+		                JOptionPane.showMessageDialog(this, "Không thể xóa");
+		            }
+				}
+			}
+		}
+		
+		if(obj.equals(btnTaiLai)) {
+			lamMoiThongTin();
 		}
 	}
 }

@@ -3,7 +3,12 @@ package gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -21,7 +26,7 @@ import custom_gui.ScrollBarCustom;
 import custom_gui.Table;
 import custom_gui.TextField;
 
-public class QL_KhachHang extends JPanel{
+public class QL_KhachHang extends JPanel implements ActionListener, MouseListener{
 
 	private Button btnThem;
 	private Button btnSua;
@@ -32,6 +37,8 @@ public class QL_KhachHang extends JPanel{
 	private TextField txtSDT;
 	private JDateChooser txtNgayThamGia;
 	private JButton btnTaoMa;
+	private DefaultTableModel modelKH;
+	private Table tblKH;
 
 	public QL_KhachHang() {
 		setLayout(null);
@@ -159,32 +166,83 @@ public class QL_KhachHang extends JPanel{
 		tltKH.setVerticalScrollBar(new ScrollBarCustom());
 		tltKH.setBounds(0, 310, 1095, 453);
 		String[] header = {"Mã Khách Hàng", "Tên Khách Hàng", "Số Điện Thoại", "Ngày Tham Gia", "Điểm Tích Lũy"};
-		DefaultTableModel modelKH = new DefaultTableModel(header, 0);
-		Table tblKH = new Table();
+		modelKH = new DefaultTableModel(header, 0);
+		tblKH = new Table();
 		tblKH.setModel(modelKH);
 		tltKH.setViewportView(tblKH);
 		pnlKH.add(tltKH);
 		
-		modelKH.addRow(new Object[]{"KH001", "Nguyễn Thị Hương", "0987654321", "2024-05-01", 100});
-		modelKH.addRow(new Object[]{"KH002", "Trần Văn Nam", "0123456789", "2024-05-02", 150});
-		modelKH.addRow(new Object[]{"KH003", "Phạm Minh Tuấn", "0932145678", "2024-05-03", 200});
-		modelKH.addRow(new Object[]{"KH004", "Lê Thị Lan", "0867543219", "2024-05-04", 50});
-		modelKH.addRow(new Object[]{"KH005", "Hoàng Văn Hải", "0912345678", "2024-05-05", 300});
-		modelKH.addRow(new Object[]{"KH006", "Mai Thị Thanh", "0987654321", "2024-05-06", 120});
-		modelKH.addRow(new Object[]{"KH007", "Nguyễn Văn An", "0901234567", "2024-05-07", 250});
-		modelKH.addRow(new Object[]{"KH008", "Lê Thị Hoa", "0976543210", "2024-05-08", 80});
-		modelKH.addRow(new Object[]{"KH009", "Trần Văn Đức", "0897654321", "2024-05-09", 180});
-		modelKH.addRow(new Object[]{"KH010", "Hoàng Thị Ngọc", "0888765432", "2024-05-10", 210});
-		modelKH.addRow(new Object[]{"KH011", "Phạm Văn Tuấn", "0978654321", "2024-05-11", 70});
-		modelKH.addRow(new Object[]{"KH012", "Nguyễn Thị Minh", "0965432178", "2024-05-12", 220});
-		modelKH.addRow(new Object[]{"KH013", "Lê Văn Đạt", "0890987654", "2024-05-13", 130});
-		modelKH.addRow(new Object[]{"KH014", "Trần Thị Thu", "0932123456", "2024-05-14", 240});
-		modelKH.addRow(new Object[]{"KH015", "Phạm Văn Hùng", "0945678901", "2024-05-15", 160});
-		modelKH.addRow(new Object[]{"KH016", "Nguyễn Thị Hạnh", "0998765432", "2024-05-16", 190});
-		modelKH.addRow(new Object[]{"KH017", "Trần Văn Tâm", "0887654321", "2024-05-17", 110});
-		modelKH.addRow(new Object[]{"KH018", "Lê Thị Ngọc", "0977654321", "2024-05-18", 270});
-		modelKH.addRow(new Object[]{"KH019", "Phạm Văn Quân", "0901122334", "2024-05-19", 140});
-		modelKH.addRow(new Object[]{"KH020", "Nguyễn Thị Mai", "0987651234", "2024-05-20", 230});
+		btnTaoMa.addActionListener(this);
+		btnThem.addActionListener(this);
+		btnSua.addActionListener(this);
+		btnXoa.addActionListener(this);
+		btnTaiLai.addActionListener(this);
+		tblKH.addMouseListener(this);
+		
+//		modelKH.addRow(new Object[]{"KH001", "Nguyễn Thị Hương", "0987654321", "2024-05-01", 100});
+//		modelKH.addRow(new Object[]{"KH002", "Trần Văn Nam", "0123456789", "2024-05-02", 150});
+//		modelKH.addRow(new Object[]{"KH003", "Phạm Minh Tuấn", "0932145678", "2024-05-03", 200});
+//		modelKH.addRow(new Object[]{"KH004", "Lê Thị Lan", "0867543219", "2024-05-04", 50});
+//		modelKH.addRow(new Object[]{"KH005", "Hoàng Văn Hải", "0912345678", "2024-05-05", 300});
+//		modelKH.addRow(new Object[]{"KH006", "Mai Thị Thanh", "0987654321", "2024-05-06", 120});
+//		modelKH.addRow(new Object[]{"KH007", "Nguyễn Văn An", "0901234567", "2024-05-07", 250});
+//		modelKH.addRow(new Object[]{"KH008", "Lê Thị Hoa", "0976543210", "2024-05-08", 80});
+//		modelKH.addRow(new Object[]{"KH009", "Trần Văn Đức", "0897654321", "2024-05-09", 180});
+//		modelKH.addRow(new Object[]{"KH010", "Hoàng Thị Ngọc", "0888765432", "2024-05-10", 210});
+//		modelKH.addRow(new Object[]{"KH011", "Phạm Văn Tuấn", "0978654321", "2024-05-11", 70});
+//		modelKH.addRow(new Object[]{"KH012", "Nguyễn Thị Minh", "0965432178", "2024-05-12", 220});
+//		modelKH.addRow(new Object[]{"KH013", "Lê Văn Đạt", "0890987654", "2024-05-13", 130});
+//		modelKH.addRow(new Object[]{"KH014", "Trần Thị Thu", "0932123456", "2024-05-14", 240});
+//		modelKH.addRow(new Object[]{"KH015", "Phạm Văn Hùng", "0945678901", "2024-05-15", 160});
+//		modelKH.addRow(new Object[]{"KH016", "Nguyễn Thị Hạnh", "0998765432", "2024-05-16", 190});
+//		modelKH.addRow(new Object[]{"KH017", "Trần Văn Tâm", "0887654321", "2024-05-17", 110});
+//		modelKH.addRow(new Object[]{"KH018", "Lê Thị Ngọc", "0977654321", "2024-05-18", 270});
+//		modelKH.addRow(new Object[]{"KH019", "Phạm Văn Quân", "0901122334", "2024-05-19", 140});
+//		modelKH.addRow(new Object[]{"KH020", "Nguyễn Thị Mai", "0987651234", "2024-05-20", 230});
 
+	}
+	
+	public String taoMa() {
+		String uuid = UUID.randomUUID().toString();
+	    return "KH" + uuid.replace("-", "").substring(0, 7).toUpperCase();
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		Object obj = e.getSource();
+		if(obj.equals(btnTaoMa)) {
+			txtMaKH.setText(taoMa());
+		}
 	}
 }

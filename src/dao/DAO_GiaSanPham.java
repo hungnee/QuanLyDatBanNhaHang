@@ -76,27 +76,24 @@ public class DAO_GiaSanPham {
 	    return n > 0;
 	}
 	
-	
-	
-	public String layAnh(String maGSP) {
+	public boolean suaGiaSanPham(GiaSanPham gsp) {
 		ConnectDB.getInstance();
 	    Connection con = ConnectDB.getConnection();
 	    PreparedStatement stmt = null;
 	    ResultSet rs = null;
-	    String anhSP = null;
+	    int n = 0;
 	    try {
-            con = ConnectDB.getConnection();
-            if (con != null) {
-                stmt = con.prepareStatement("SELECT anhSanPham FROM GiaSanPham WHERE maGiaSanPham = ?");
-                stmt.setString(1, maGSP);
-                rs = stmt.executeQuery();
-                if (rs.next()) {
-                	anhSP = rs.getString("maSanPham");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
+	    	stmt = con.prepareStatement("UPDATE GiaSanPham set maSanPham = ?, maDonVi = ?, donGia = ?, anhSanPham = ? where maGiaSanPham = ?");
+	    	stmt.setString(1, gsp.getSanPham().getMaSanPham());
+	    	stmt.setString(2, gsp.getDonVi().getMaDonVi());
+	    	stmt.setDouble(3, gsp.getDonGia());
+	    	stmt.setString(4, gsp.getAnhSanPham());
+	    	stmt.setString(5, gsp.getMaGiaSanPham());
+
+	        n = stmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
 	        try {
 				stmt.close();
 			} catch (SQLException e2) {
@@ -104,6 +101,31 @@ public class DAO_GiaSanPham {
 				e2.printStackTrace();
 			}
 	    }
-	    return anhSP;
+	    return n > 0;
 	}
+	
+	public boolean xoaGiaSanPham(GiaSanPham gsp) {
+		ConnectDB.getInstance();
+	    Connection con = ConnectDB.getConnection();
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+	    int n = 0;
+	    try {
+	    	stmt = con.prepareStatement("DELETE FROM GiaSanPham WHERE maGiaSanPham = ?");
+	    	stmt.setString(1, gsp.getMaGiaSanPham());
+
+	        n = stmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+				stmt.close();
+			} catch (SQLException e2) {
+				// TODO: handle exception
+				e2.printStackTrace();
+			}
+	    }
+	    return n > 0;
+	}
+	
 }

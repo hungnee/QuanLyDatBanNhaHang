@@ -19,6 +19,11 @@ public class GiaSanPham {
 		this.donGia = donGia;
 		this.anhSanPham = anhSanPham;
 	}
+	
+	public GiaSanPham(String maGiaSanPham) {
+		super();
+		this.maGiaSanPham = maGiaSanPham;
+	}
 	public String getMaGiaSanPham() {
 		return maGiaSanPham;
 	}

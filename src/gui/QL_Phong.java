@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -46,7 +47,6 @@ public class QL_Phong extends JPanel implements ActionListener, MouseListener{
 	private ArrayList<Phong> dsPhong;
 	private DefaultTableModel modelPhong;
 	private Table tblPhong;
-	private int sucChua;
 
 	public QL_Phong() {
 		setLayout(null);
@@ -202,21 +202,17 @@ public class QL_Phong extends JPanel implements ActionListener, MouseListener{
 	
 	
 	public String taoMa() {
-		int ma = daoPhong.layDSPhong().size() + 1;
-		return String.format("P%05d", ma);
+		String uuid = UUID.randomUUID().toString();
+	    return "P" + uuid.replace("-", "").substring(0, 7).toUpperCase();
 	}
 	
 	public boolean validData() {
 		String maPhong = txtMaPhong.getText().trim();
 		String tenPhong = txtTenPhong.getText().trim();
 		String sucChuaStr = txtSucChua.getText().trim();
+		int sucChua = 0;
 		String khuVuc = cmbKhuVuc.getSelectedItem().toString();
-		try {
-			sucChua = Integer.parseInt(sucChuaStr);
-		} catch (NumberFormatException e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
+		
 		
 		
 		if(maPhong.isEmpty()) {
@@ -239,7 +235,16 @@ public class QL_Phong extends JPanel implements ActionListener, MouseListener{
 			JOptionPane.showMessageDialog(this, "Sức chứa phải là số");
 			txtSucChua.requestFocus();
 			return false;
-		} else if(sucChua == 0) {
+		} 
+		
+		try {
+			sucChua = Integer.parseInt(sucChuaStr);
+		} catch (NumberFormatException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if(sucChua == 0) {
 			JOptionPane.showMessageDialog(this, "Sức chứa phải lớn hơn 0");
 			txtSucChua.requestFocus();
 			return false;

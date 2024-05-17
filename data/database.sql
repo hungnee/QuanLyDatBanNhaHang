@@ -43,7 +43,7 @@ CREATE TABLE [dbo].[KhachHang](
 	[tenKhachHang] [nvarchar](255) NOT NULL,
 	[soDienThoai] [nchar](10) NOT NULL,
 	[ngayThamGia] [date] NOT NULL,
-	[diemTichLuy] [float] NOT NULL,
+	[diemTichLuy] [int] NOT NULL,
  CONSTRAINT [PK_KhachHang] PRIMARY KEY CLUSTERED 
 (
 	[maKhachHang] ASC

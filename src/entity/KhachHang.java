@@ -21,6 +21,11 @@ public class KhachHang {
 		this.ngayThamGia = ngayThamGia;
 		this.diemTichLuy = diemTichLuy;
 	}
+	
+	public KhachHang(String maKhachHang) {
+		super();
+		this.maKhachHang = maKhachHang;
+	}
 	public String getMaKhachHang() {
 		return maKhachHang;
 	}

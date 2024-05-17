@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -187,8 +188,8 @@ public class QL_SanPham extends JPanel implements ActionListener, MouseListener{
 	}
 	
 	public String taoMa() {
-		int ma = daoSP.layDSSanPham().size() + 1;
-		return String.format("SP%05d", ma);
+		String uuid = UUID.randomUUID().toString();
+	    return "SP" + uuid.replace("-", "").substring(0, 7).toUpperCase();
 	}
 	
 	public boolean validData() {
